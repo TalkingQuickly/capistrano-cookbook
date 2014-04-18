@@ -1,0 +1,32 @@
+# Inspired by https://gist.github.com/dv/10370719
+
+namespace :database do
+  desc "fetches the remote database.yml and creates the user and database specified in it currently postgres only. Will only work if your db server also has your rails app on it."
+  task :create do
+    on primary(:db) do |host|
+      unless test("[ -f #{shared_path}/config/database.yml ]")
+        execute "cp #{shared_path}/config/database.example.yml #{shared_path}/config/database.yml"
+      end
+      system("scp #{fetch(:deploy_user)}@#{host}:#{shared_path}/config/database.yml db.tmp.yml")
+      yaml =  YAML.load_file("db.tmp.yml")
+      system("rm db.tmp.yml")
+      puts yaml
+      puts fetch(:rails_env)
+      database_config = yaml[fetch(:rails_env).to_s]
+
+      if test %Q{sudo -u postgres psql postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='#{database_config["username"]}';" | grep -q 1}
+        info "Role #{database_config['username']} already exists"
+      else
+        execute %Q{sudo -u postgres psql -c "create user #{database_config["username"]} with password '#{database_config["password"]}';"}
+      end
+
+      # Create the database
+      if test %Q{sudo -u postgres psql -lqt | cut -d \\| -f 1 | grep -wq #{database_config["database"]}}
+        info "Database #{database_config['database']} already exists"
+      else
+        execute %Q{sudo -u postgres psql -c "create database #{database_config["database"]};"}
+        execute %Q{sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE #{database_config["database"]} to #{database_config["username"]};"}
+      end
+    end
+  end
+end

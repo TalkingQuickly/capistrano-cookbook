@@ -10,5 +10,6 @@ module Capistrano
     require 'capistrano/cookbook/restart'
     require 'capistrano/cookbook/run_tests'
     require 'capistrano/cookbook/setup_config'
+    require 'capistrano/cookbook/create_database'
   end
 end
