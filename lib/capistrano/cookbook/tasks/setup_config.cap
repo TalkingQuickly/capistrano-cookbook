@@ -3,6 +3,7 @@ require 'capistrano/cookbook/helpers/substitute_strings'
 require 'capistrano/cookbook/helpers/template'
 require 'capistrano/cookbook/nginx'
 require 'capistrano/cookbook/monit'
+require 'securerandom'
 
 namespace :deploy do
   task :setup_config do
