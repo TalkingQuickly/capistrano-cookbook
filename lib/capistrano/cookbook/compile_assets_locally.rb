@@ -1,0 +1,1 @@
+load File.expand_path("tasks/compile_assets_locally.cap", File.dirname(__FILE__))

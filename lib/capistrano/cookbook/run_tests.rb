@@ -1,0 +1,1 @@
+load File.expand_path("tasks/run_tests.cap", File.dirname(__FILE__))

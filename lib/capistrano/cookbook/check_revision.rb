@@ -1,0 +1,1 @@
+load File.expand_path("tasks/check_revision.cap",File.dirname(__FILE__))
