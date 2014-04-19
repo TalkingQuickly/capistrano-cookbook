@@ -177,6 +177,8 @@ Finally any config files included in `executable_config_files` will be marked as
 
 The defaults are:
 
+Config Files:
+
 ``` ruby
 set(
   :config_files,
@@ -189,6 +191,8 @@ set(
   unicorn_init.sh
 ))
 ```
+
+Symlinks:
 
 ```ruby
 set(
@@ -213,6 +217,8 @@ set(
   ]
 )
 ```
+
+Executable Config Files:
 
 ```ruby
 set(
