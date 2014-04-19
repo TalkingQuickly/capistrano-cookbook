@@ -157,6 +157,72 @@ and add a hook in `deploy.rb` to run them automatically:
 before "deploy", "deploy:run_tests"
 ```
 
+#### Setup Config
+
+The `deploy:setup_config` tasks provides a simple way to automate the generation of server specific configuration files and the setting up of any required symlinks outside of the applications normal directory structure.
+
+If no values are provided in `deploy.rb` to override the defaults then this task includes opinionated defaults to setup a server for deployment as explained in the book [Reliably Deploying Rails Applications](https://leanpub.com/deploying_rails_applications) and [this tutorial](http://www.talkingquickly.co.uk/2014/01/deploying-rails-apps-to-a-vps-with-capistrano-v3/).
+
+Each of the `config_files` will be created in `APP_PATH/shared.config`.
+
+The task looks in the following locations for a template file with a corresponding name with a `.erb` extension:
+
+* `config/deploy/STAGE/FILENAME.erb`
+* `config/deploy/shared/FILENAME.erb`
+* `templates/FILENAME.erb` directory of this gem ([github link](https://github.com/TalkingQuickly/capistrano-cookbook/tree/master/lib/capistrano/cookbook/templates))  
+
+For any config files included in the `source` part of an entry in the `symlinks` array, a symlink will be created to the corresponding `link` location on the target machine.
+
+Finally any config files included in `executable_config_files` will be marked as executable.
+
+The defaults are:
+
+``` ruby
+set(
+  :config_files,
+  %w(
+  nginx.conf
+  database.example.yml
+  log_rotation
+  monit
+  unicorn.rb
+  unicorn_init.sh
+))
+```
+
+```ruby
+set(
+  :symlinks,
+  [
+    {
+      source: "nginx.conf",
+      link: "/etc/nginx/sites-enabled/{{full_app_name}}"
+    },
+    {
+      source: "unicorn_init.sh",
+      link: "/etc/init.d/unicorn_{{full_app_name}}"
+    },
+    {
+      source: "log_rotation",
+     link: "/etc/logrotate.d/{{full_app_name}}"
+    },
+    {
+      source: "monit",
+      link: "/etc/monit/conf.d/{{full_app_name}}.conf"
+    }
+  ]
+)
+```
+
+```ruby
+set(
+  :executable_config_files,
+  w(
+    unicorn_init.sh
+  )
+)
+```
+
 ## Contributing
 
 1. Fork it ( http://github.com/<my-github-username>/capistrano-cookbook/fork )
