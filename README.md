@@ -175,6 +175,14 @@ For any config files included in the `source` part of an entry in the `symlinks`
 
 Finally any config files included in `executable_config_files` will be marked as executable.
 
+This task will also automatically invoke the following tasks:
+
+* `nginx:remove_default_vhost`
+* `nginx:reload`
+* `monit:restart`
+
+To ensure configuration file changes are picked up correctly.
+
 The defaults are:
 
 Config Files:
