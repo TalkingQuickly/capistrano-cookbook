@@ -3,9 +3,9 @@ upstream unicorn_<%= fetch(:full_app_name) %> {
 }
 
 server {
-  server_name <%= fetch(:server_name) %>;
   listen 80;
   root <%= fetch(:deploy_to) %>/current/public;
+  server_name <%= fetch(:server_name) %>;
 
   location ^~ /assets/ {
     gzip_static on;
@@ -13,8 +13,8 @@ server {
     add_header Cache-Control public;
   }
 
-  try_files $uri/index.html $uri @unicorn_<%= fetch(:full_app_name) %>;
-  location @unicorn_<%= fetch(:full_app_name) %> {
+  try_files $uri/index.html $uri @unicorn;
+  location @unicorn {
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header Host $http_host;
     proxy_redirect off;
@@ -28,9 +28,9 @@ server {
 
 <% if fetch(:enable_ssl) %>
 server {
-  server_name <%= fetch(:server_name) %>;
-  listen 443;
+  listen 443 default deferred;
   root <%= fetch(:deploy_to) %>/current/public;
+  server_name <%= fetch(:server_name) %>;
 
   location ^~ /assets/ {
     gzip_static on;
@@ -44,7 +44,7 @@ server {
     proxy_set_header   X-Forwarded-Proto https;
     proxy_set_header Host $http_host;
     proxy_redirect off;
-    proxy_pass http://unicorn;
+    proxy_pass http://unicorn_<%= fetch(:full_app_name) %>;
   }
 
   error_page 500 502 503 504 /500.html;
@@ -53,5 +53,5 @@ server {
   ssl on;
   ssl_certificate <%= fetch(:deploy_to) %>/shared/ssl_cert.crt;
   ssl_certificate_key <%= fetch(:deploy_to) %>/shared/ssl_private_key.key;
-}#
+}
 <% end %>
