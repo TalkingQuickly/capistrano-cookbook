@@ -1,3 +1,4 @@
+require 'capistrano/dsl'
 require 'capistrano/cookbook/helpers/setup_config_values'
 require 'capistrano/cookbook/helpers/substitute_strings'
 require 'capistrano/cookbook/helpers/template'
