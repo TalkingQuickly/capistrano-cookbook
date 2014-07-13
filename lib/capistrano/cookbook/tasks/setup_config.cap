@@ -12,7 +12,6 @@ namespace :deploy do
     on roles(:app) do
       # make the config dir
       execute :mkdir, "-p #{shared_path}/config"
-      full_app_name = fetch(:full_app_name)
 
       # config files to be uploaded to shared/config, see the
       # definition of smart_template for details of operation.
@@ -43,4 +42,4 @@ after 'deploy:setup_config', 'nginx:reload'
 
 # Restart monit so it will pick up any monit configurations
 # we've added
-after 'deploy:setup_config', 'monit:restart'
+after 'deploy:setup_config', 'monit:reload'
