@@ -50,6 +50,7 @@ module Capistrano
           monit
           unicorn.rb
           unicorn_init.sh
+          secrets.yml
         )
       end
     end
