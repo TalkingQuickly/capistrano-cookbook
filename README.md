@@ -66,7 +66,8 @@ Add the following to `deploy.rb`
 
 Currently only works with Postgresql on configurations where your web server and db server are the same machine, e.g. single box deployments. This task will:
 
-* Check to see if a remote `database.yml` exists in `APP_PATH/shared/config`, if not attempt to copy one from `APP_PATH/shared/config`.
+* Check to see if a remote `database.yml` exists in `APP_PATH/shared/config`, if not attempt to copy one from `APP_PATH/shared/config`
+* If a new `database.yml` is created, it will include a username and database name based on the application name and a random password
 * Download the remote `database.yml`
 * Create the Postgres user specified in `database.yml` if it doesn't already exist
 * Create the Database specified in `database.yml` if it doesn't already exist
