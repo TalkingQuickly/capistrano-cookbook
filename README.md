@@ -6,7 +6,7 @@ A collection of Capistrano 3 Compatible tasks to make deploying Rails and Sinatr
 
 Add this line to your application's Gemfile:
 
-    gem 'capistrano-cookbook'
+    gem 'capistrano-cookbook', require: false, group: :development
 
 And then execute:
 
