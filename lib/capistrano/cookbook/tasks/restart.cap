@@ -8,3 +8,6 @@ namespace :deploy do
     end
   end
 end
+
+# Automatically restart after a deploy
+after 'deploy', 'deploy:restart'
