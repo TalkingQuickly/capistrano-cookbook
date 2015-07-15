@@ -164,7 +164,7 @@ The `deploy:setup_config` tasks provides a simple way to automate the generation
 
 If no values are provided in `deploy.rb` to override the defaults then this task includes opinionated defaults to setup a server for deployment as explained in the book [Reliably Deploying Rails Applications](https://leanpub.com/deploying_rails_applications) and [this tutorial](http://www.talkingquickly.co.uk/2014/01/deploying-rails-apps-to-a-vps-with-capistrano-v3/).
 
-Each of the `config_files` will be created in `APP_PATH/shared.config`.
+Each of the `config_files` will be created in `APP_PATH/shared/config`.
 
 The task looks in the following locations for a template file with a corresponding name with a `.erb` extension:
 
