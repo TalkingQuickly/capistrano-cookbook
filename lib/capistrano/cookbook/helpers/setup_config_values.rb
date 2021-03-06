@@ -18,38 +18,21 @@ module Capistrano
       def symlinks_defaults
         [
           {
-            source: "nginx.conf",
-            link: "/etc/nginx/sites-enabled/{{full_app_name}}"
-          },
-          {
-            source: "unicorn_init.sh",
-            link: "/etc/init.d/unicorn_{{full_app_name}}"
-          },
-          {
             source: "log_rotation",
-           link: "/etc/logrotate.d/{{full_app_name}}"
+            link: "/etc/logrotate.d/{{full_app_name}}"
           },
-          {
-            source: "monit",
-            link: "/etc/monit/conf.d/{{full_app_name}}.conf"
-          }
         ]
       end
 
       def executable_config_files_defaults
         %w(
-          unicorn_init.sh
         )
       end
 
       def config_files_defaults
         %w(
-          nginx.conf
           database.example.yml
           log_rotation
-          monit
-          unicorn.rb
-          unicorn_init.sh
           secrets.yml
         )
       end

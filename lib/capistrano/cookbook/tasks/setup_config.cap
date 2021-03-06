@@ -32,6 +32,14 @@ namespace :deploy do
   end
 end
 
+# @todo - better if these were created as files in the shared
+# directory and then symlinked
+after 'deploy:setup_config', 'puma:config'
+after 'deploy:setup_config', 'puma:nginx_config'
+after 'deploy:setup_config', 'puma:monit:config'
+after 'deploy:setup_config', 'puma:systemd:config'
+
+
 # remove the default nginx configuration as it will tend
 # to conflict with our configs.
 before 'deploy:setup_config', 'nginx:remove_default_vhost'
@@ -43,3 +51,4 @@ after 'deploy:setup_config', 'nginx:reload'
 # Restart monit so it will pick up any monit configurations
 # we've added
 after 'deploy:setup_config', 'monit:reload'
+
