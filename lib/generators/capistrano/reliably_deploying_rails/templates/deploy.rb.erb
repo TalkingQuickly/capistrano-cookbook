@@ -5,7 +5,7 @@ set :application, '<%= Rails.application.class.module_parent_name.underscore %>'
 set :deploy_user, 'deploy'
 
 # setup repo details
-set :repo_url, '<%= `git config --get remote.origin.url` %>'
+set :repo_url, '<%= `git config --get remote.origin.url`.delete!("\n") %>'
 
 # setup rbenv.
 set :rbenv_type, :system
