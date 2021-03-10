@@ -10,16 +10,6 @@ namespace :deploy do
   task :setup_config do
     conf = ::Capistrano::Cookbook::SetupConfigValues.new
 
-    base_path = File.expand_path('../../templates', __FILE__)
-
-    # Create local config files which override the defaults provided by
-    # Capistrano Puma
-    conf.local_config_files.each do |file|
-      unless File.file?(file)
-        copy_file(File.join(base_path, file), "config/deploy/templates/#{file}")
-      end
-    end
-
     on roles(:app) do
       # make the config dir
       execute :mkdir, "-p #{shared_path}/config"
