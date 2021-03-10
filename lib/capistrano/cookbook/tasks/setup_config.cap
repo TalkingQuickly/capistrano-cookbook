@@ -12,6 +12,8 @@ namespace :deploy do
 
     base_path = File.expand_path('../../templates', __FILE__)
 
+    # Create local config files which override the defaults provided by
+    # Capistrano Puma
     conf.local_config_files.each do |file|
       unless File.file?(file)
         copy_file(File.join(base_path, file), "config/deploy/templates/#{file}")
@@ -41,23 +43,21 @@ namespace :deploy do
   end
 end
 
-# @todo - better if these were created as files in the shared
-# directory and then symlinked
+
+# remove the default nginx configuration as it will tend to conflict with our configs
+before 'deploy:setup_config', 'nginx:remove_default_vhost'
+
+# After setup config has generated and setup initial files, run the Capistrano Puma
+# tasks responsible for uploading config files. Note that `setup_config` creates overrides
+# for these in `config/deploy/templates` so we're not using the default ones from the gem
 after 'deploy:setup_config', 'puma:config'
 after 'deploy:setup_config', 'puma:nginx_config'
 after 'deploy:setup_config', 'puma:monit:config'
 after 'deploy:setup_config', 'puma:systemd:config'
 
-
-# remove the default nginx configuration as it will tend
-# to conflict with our configs.
-before 'deploy:setup_config', 'nginx:remove_default_vhost'
-
-# reload nginx to it will pick up any modified vhosts from
-# setup_config
+# reload nginx to it will pick up any modified vhosts from setup_config
 after 'deploy:setup_config', 'nginx:reload'
 
-# Restart monit so it will pick up any monit configurations
-# we've added
+# Restart monit so it will pick up any monit configurations we've added
 after 'deploy:setup_config', 'monit:reload'
 

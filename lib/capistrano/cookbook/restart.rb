@@ -1,1 +1,0 @@
-load File.expand_path("tasks/restart.cap", File.dirname(__FILE__))
