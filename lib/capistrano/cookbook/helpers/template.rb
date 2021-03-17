@@ -28,6 +28,8 @@ def template_file(name)
     return file
   elsif File.exist?((file = "config/deploy/shared/#{name}.erb"))
     return file
+  elsif File.exist?((file = "config/deploy/templates/#{name}.erb"))
+    return file
   elsif File.exist?(file = File.expand_path("../templates/#{name}.erb",File.dirname(__FILE__)))
     return file    
   end

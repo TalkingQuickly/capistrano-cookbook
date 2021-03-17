@@ -27,6 +27,8 @@ module Capistrano
             puma_monit.conf.erb
             puma.rb.erb
             puma.service.erb
+            sidekiq_monit.erb
+            sidekiq.service.capistrano.erb
           ).each do |file|
             unless File.file?(file)
               copy_file(File.join(base_path, file), "config/deploy/templates/#{file}")

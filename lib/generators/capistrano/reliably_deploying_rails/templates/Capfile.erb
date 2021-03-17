@@ -35,5 +35,10 @@ install_plugin Capistrano::Puma::Nginx, load_hooks: false   # if you want to upl
 install_plugin Capistrano::Puma::Systemd, load_hooks: false # if you use SystemD 
 install_plugin Capistrano::Puma::Monit, load_hooks: false  # if you need the monit tasks
 
+require 'capistrano/sidekiq'
+install_plugin Capistrano::Sidekiq  # Default sidekiq tasks
+# Then select your service manager
+install_plugin Capistrano::Sidekiq::Systemd 
+
 # Load custom tasks from `lib/capistrano/tasks` if you have any defined
 Dir.glob("lib/capistrano/tasks/*.rake").each { |r| import r }

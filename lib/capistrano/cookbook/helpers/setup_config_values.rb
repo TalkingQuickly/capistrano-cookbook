@@ -21,6 +21,10 @@ module Capistrano
             source: "log_rotation",
             link: "/etc/logrotate.d/{{full_app_name}}"
           },
+          {
+            source: "sidekiq.service.capistrano",
+            link: "/etc/systemd/system/#{fetch(:sidekiq_service_unit_name)}.service"
+          }
         ]
       end
 
@@ -34,6 +38,7 @@ module Capistrano
           database.example.yml
           log_rotation
           secrets.yml
+          sidekiq.service.capistrano
         )
       end
     end
