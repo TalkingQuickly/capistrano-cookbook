@@ -1,8 +1,5 @@
-# Monit configuration for Sidekiq :  <%= fetch(:application) %>
-<% pid_files.each_with_index do |pid_file, idx| %>
-check process <%= sidekiq_service_name(idx) %>
-  with pidfile "<%= pid_file %>"
-  start program = "/usr/bin/systemctl start <%= sidekiq_service_name(idx) %>"
-  stop program = "/usr/bin/systemctl stop <%= sidekiq_service_name(idx) %>"
-  group <%= fetch(:sidekiq_monit_group) || fetch(:application) %>-sidekiq
+check process <%= fetch(:sidekiq_service_unit_name) %> matching "sidekiq.*<%= fetch(:full_app_name) %>"  
+  start program = "/usr/bin/systemctl start <%= fetch(:sidekiq_service_unit_name) %>"
+  stop program = "/usr/bin/systemctl stop <%= fetch(:sidekiq_service_unit_name) %>"
+  group <%= fetch(:sidekiq_monit_group) || fetch(:full_app_name) %>-sidekiq
 <% end %>
