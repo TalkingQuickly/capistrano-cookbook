@@ -16,9 +16,44 @@ Or install it yourself as:
 
     $ gem install capistrano-cookbook
 
+## Versioning
+
+This gem is primarily intended to provide a batteries included approach to getting Rails applications up and running. It is tested with the server configuration in <https://github.com/TalkingQuickly/rails-server-template>.
+
+Major versions of the rails server template above and this gem stay in sync. So Version X.*.* of this gem should provide a working out of the box capistrano configuration when used with version X.*.* of the server template.
+
+Major and minor versions of this gem, the server template and the book [Reliably Deploying Rails Applications](https://leanpub.com/deploying_rails_applications) also stay in sync. Updates to the book are free for life so on a new project, it's always advisable to make sure you have the latest version.
+
 ## Usage
 
-### Including Tasks
+### Boostrap
+
+To generate a complete Capistrano configuration include the gem in your Gemfile and then use the following Rails Generator:
+
+```
+bundle exec rails g capistrano:reliably_deploying_rails:bootstrap --sidekiq --production_hostname='YOUR_PRODUCTION_DOMAIN' --production_server_address='YOUR_PRODUCTION_SERVER'
+```
+
+Replacing `YOUR_PRODUCTION_DOMAIN` with the domain name people will access the Rails app on and `YOUR_PRODUCTION_SERVER` with the address or ip that can be used to access the server via SSH, these may be the same thing but often will not be (e.g. if the domain has a CDN or Load Balancer between it and the server you're deploying to),
+
+This will generate a complete Capistrano configuration.
+
+You can then execute:
+
+```
+bundle exec cap production deploy:setup_config
+bundle exec cap production database:create
+```
+
+To perform setup tasks and create a new empty database. Followed by:
+
+```
+bundle exec cap production deploy
+```
+
+To kick off you first deploy.
+
+### Including Tasks Manually
 
 To include all tasks from the gem, add the following to your `Capfile`:
 
@@ -35,7 +70,6 @@ require 'capistrano/cookbook/create_database'
 require 'capistrano/cookbook/logs'
 require 'capistrano/cookbook/monit'
 require 'capistrano/cookbook/nginx'
-require 'capistrano/cookbook/restart'
 require 'capistrano/cookbook/run_tests'
 require 'capistrano/cookbook/setup_config'
 ```
@@ -124,20 +158,6 @@ cap STAGE nginx:start
 cap STAGE nginx:stop
 cap STAGE nginx:restart
 cap STAGE nginx:remove_default_vhost
-```
-
-#### Restart
-
-Provides Commands for interacting with the Unicorn app server via an `init.d` script.
-
-Usage:
-
-``` bash
-cap STAGE deploy:start
-cap STAGE deploy:stop
-cap STAGE deploy:force-stop
-cap STAGE deploy:restart
-cap STAGE deploy:upgrade
 ```
 
 #### Run Tests
