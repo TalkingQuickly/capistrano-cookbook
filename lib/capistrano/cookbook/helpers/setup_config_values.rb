@@ -16,11 +16,15 @@ module Capistrano
       private
 
       def symlinks_defaults
-        [
+        base = [
           {
             source: "log_rotation",
             link: "/etc/logrotate.d/{{full_app_name}}"
-          },
+          }
+        ]
+        return base unless sidekiq_enabled?
+
+        base + [
           {
             source: "sidekiq.service.capistrano",
             link: "/etc/systemd/system/#{fetch(:sidekiq_service_unit_name)}.service"
@@ -38,13 +42,20 @@ module Capistrano
       end
 
       def config_files_defaults
-        %w(
+        base = %w(
           database.example.yml
           log_rotation
-          secrets.yml
+        )
+        return base unless sidekiq_enabled?
+
+        base + %w(
           sidekiq.service.capistrano
           sidekiq_monit
         )
+      end
+
+      def sidekiq_enabled?
+        defined?(Capistrano::Sidekiq) == 'constant' && Capistrano::Sidekiq.class == Class
       end
     end
   end
