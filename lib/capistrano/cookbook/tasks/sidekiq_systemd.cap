@@ -1,0 +1,15 @@
+namespace :sidekiq do
+  namespace :systemd do
+    desc 'Install systemd sidekiq service'
+    task :enable do
+      on roles fetch(:sidekiq_roles) do |role|
+        if fetch(:sidekiq_service_unit_user) == :system
+          execute :sudo, :systemctl, "enable", fetch(:sidekiq_service_unit_name)
+        else
+          execute :systemctl, "--user", "enable", fetch(:sidekiq_service_unit_name)
+          execute :loginctl, "enable-linger", fetch(:sidekiq_systemctl_user) if fetch(:sidekiq_enable_lingering)
+        end
+      end
+    end
+  end
+end

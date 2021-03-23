@@ -1,0 +1,1 @@
+load File.expand_path("tasks/sidekiq_systemd.cap", File.dirname(__FILE__))

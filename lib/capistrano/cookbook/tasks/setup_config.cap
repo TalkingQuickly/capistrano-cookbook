@@ -1,7 +1,7 @@
 require 'capistrano/dsl'
 require 'capistrano/cookbook/helpers/setup_config_values'
 require 'capistrano/cookbook/helpers/substitute_strings'
-require 'capistrano/cookbook/helpers/template'
+require 'capistrano/cookbook/helpers/smart_template'
 require 'capistrano/cookbook/nginx'
 require 'capistrano/cookbook/monit'
 require 'securerandom'
@@ -13,22 +13,24 @@ namespace :deploy do
     on roles(:app) do
       # make the config dir
       execute :mkdir, "-p #{shared_path}/config"
+      execute :mkdir, "-p /home/#{fetch(:deploy_user)}/.config/systemd/user"
 
       # config files to be uploaded to shared/config, see the
       # definition of smart_template for details of operation.
       conf.config_files.each do |file|
-        smart_template file
+        smart_template(file[:source], file[:destination], file[:as_root])
+        execute(:chmod, "+x #{file[:destination]}") if file[:executable]
       end
 
       # which of the above files should be marked as executable
-      conf.executable_config_files.each do |file|
-        execute :chmod, "+x #{shared_path}/config/#{file}"
-      end
+      # conf.executable_config_files.each do |file|
+      #   execute :chmod, "+x #{shared_path}/config/#{file}"
+      # end
 
       # symlink stuff which should be... symlinked
-      conf.symlinks.each do |symlink|
-        sudo "ln -nfs #{shared_path}/config/#{symlink[:source]} #{sub_strings(symlink[:link])}"
-      end
+      # conf.symlinks.each do |symlink|
+      #   sudo "ln -nfs #{shared_path}/config/#{symlink[:source]} #{sub_strings(symlink[:link])}"
+      # end
 
       if File.exists?(File.join('config', 'master.key'))
         upload! File.join('config', 'master.key'), File.join(shared_path, 'config', 'master.key')
@@ -48,6 +50,10 @@ after 'deploy:setup_config', 'puma:config'
 after 'deploy:setup_config', 'puma:nginx_config'
 after 'deploy:setup_config', 'puma:monit:config'
 after 'deploy:setup_config', 'puma:systemd:config'
+after 'deploy:setup_config', 'puma:systemd:enable'
+
+# Enable the sidekiq systemd service so that it's started automatically on (re)boot
+after 'deploy:setup_config', 'sidekiq:systemd:enable'
 
 # reload nginx to it will pick up any modified vhosts from setup_config
 after 'deploy:setup_config', 'nginx:reload'

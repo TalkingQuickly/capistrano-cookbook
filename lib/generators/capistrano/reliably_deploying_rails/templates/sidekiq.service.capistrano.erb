@@ -12,7 +12,7 @@ ExecReload=/bin/kill -TSTP $MAINPID
 ExecStop=/bin/kill -TERM $MAINPID
 <%="StandardOutput=append:#{fetch(:sidekiq_log)}" if fetch(:sidekiq_log) %>
 <%="StandardError=append:#{fetch(:sidekiq_error_log)}" if fetch(:sidekiq_error_log) %>
-<%="User=#{fetch(:sidekiq_user)}" if fetch(:sidekiq_user) %>
+<%="User=#{fetch(:sidekiq_user)}" if fetch(:sidekiq_user)  %>
 <%="EnvironmentFile=#{fetch(:sidekiq_service_unit_env_file)}" if fetch(:sidekiq_service_unit_env_file) %>
 <% fetch(:sidekiq_service_unit_env_vars, []).each do |environment_variable| %>
   <%="Environment=#{environment_variable}" %>
