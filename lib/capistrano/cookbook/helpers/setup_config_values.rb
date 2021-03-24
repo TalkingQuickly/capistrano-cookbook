@@ -16,42 +16,46 @@ module Capistrano
       private
 
       def symlinks_defaults
-        [
-          {
-            source: "nginx.conf",
-            link: "/etc/nginx/sites-enabled/{{full_app_name}}"
-          },
-          {
-            source: "unicorn_init.sh",
-            link: "/etc/init.d/unicorn_{{full_app_name}}"
-          },
+        base = [
           {
             source: "log_rotation",
-           link: "/etc/logrotate.d/{{full_app_name}}"
+            link: "/etc/logrotate.d/{{full_app_name}}"
+          }
+        ]
+        return base unless sidekiq_enabled?
+
+        base + [
+          {
+            source: "sidekiq.service.capistrano",
+            link: "/etc/systemd/system/#{fetch(:sidekiq_service_unit_name)}.service"
           },
           {
-            source: "monit",
-            link: "/etc/monit/conf.d/{{full_app_name}}.conf"
+            source: "sidekiq_monit",
+            link: "/etc/monit/conf.d/#{fetch(:full_app_name)}_sidekiq.conf"
           }
         ]
       end
 
       def executable_config_files_defaults
         %w(
-          unicorn_init.sh
         )
       end
 
       def config_files_defaults
-        %w(
-          nginx.conf
+        base = %w(
           database.example.yml
           log_rotation
-          monit
-          unicorn.rb
-          unicorn_init.sh
-          secrets.yml
         )
+        return base unless sidekiq_enabled?
+
+        base + %w(
+          sidekiq.service.capistrano
+          sidekiq_monit
+        )
+      end
+
+      def sidekiq_enabled?
+        defined?(Capistrano::Sidekiq) == 'constant' && Capistrano::Sidekiq.class == Class
       end
     end
   end

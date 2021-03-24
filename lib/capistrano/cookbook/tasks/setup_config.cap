@@ -9,6 +9,7 @@ require 'securerandom'
 namespace :deploy do
   task :setup_config do
     conf = ::Capistrano::Cookbook::SetupConfigValues.new
+
     on roles(:app) do
       # make the config dir
       execute :mkdir, "-p #{shared_path}/config"
@@ -28,18 +29,29 @@ namespace :deploy do
       conf.symlinks.each do |symlink|
         sudo "ln -nfs #{shared_path}/config/#{symlink[:source]} #{sub_strings(symlink[:link])}"
       end
+
+      if File.exists?(File.join('config', 'master.key'))
+        upload! File.join('config', 'master.key'), File.join(shared_path, 'config', 'master.key')
+      end
     end
   end
 end
 
-# remove the default nginx configuration as it will tend
-# to conflict with our configs.
+
+# remove the default nginx configuration as it will tend to conflict with our configs
 before 'deploy:setup_config', 'nginx:remove_default_vhost'
 
-# reload nginx to it will pick up any modified vhosts from
-# setup_config
+# After setup config has generated and setup initial files, run the Capistrano Puma
+# tasks responsible for uploading config files. Note that `setup_config` creates overrides
+# for these in `config/deploy/templates` so we're not using the default ones from the gem
+after 'deploy:setup_config', 'puma:config'
+after 'deploy:setup_config', 'puma:nginx_config'
+after 'deploy:setup_config', 'puma:monit:config'
+after 'deploy:setup_config', 'puma:systemd:config'
+
+# reload nginx to it will pick up any modified vhosts from setup_config
 after 'deploy:setup_config', 'nginx:reload'
 
-# Restart monit so it will pick up any monit configurations
-# we've added
+# Restart monit so it will pick up any monit configurations we've added
 after 'deploy:setup_config', 'monit:reload'
+
