@@ -1,4 +1,4 @@
 check process <%= fetch(:sidekiq_service_unit_name) %> matching "sidekiq.*<%= fetch(:full_app_name) %>"  
-  start program = "/usr/bin/systemctl start <%= fetch(:sidekiq_service_unit_name) %>"
-  stop program = "/usr/bin/systemctl stop <%= fetch(:sidekiq_service_unit_name) %>"
+  start program = "/bin/bash -c 'XDG_RUNTIME_DIR=/run/user/$(id -u) /usr/bin/systemctl start --user <%= fetch(:sidekiq_service_unit_name) %>'" as uid "<%= fetch(:sidekiq_systemctl_user) %>" and gid "<%= fetch(:sidekiq_systemctl_user) %>"
+  stop program = "/bin/bash -c 'XDG_RUNTIME_DIR=/run/user/$(id -u) /usr/bin/systemctl stop --user <%= fetch(:sidekiq_service_unit_name) %>'" as uid "<%= fetch(:sidekiq_systemctl_user) %>" and gid "<%= fetch(:sidekiq_systemctl_user) %>"
   group <%= fetch(:sidekiq_monit_group) || fetch(:full_app_name) %>-sidekiq

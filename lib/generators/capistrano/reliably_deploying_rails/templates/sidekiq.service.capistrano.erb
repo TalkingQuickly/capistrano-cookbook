@@ -1,5 +1,3 @@
-<% # Adapted from: https://github.com/seuros/capistrano-sidekiq/blob/master/lib/generators/capistrano/sidekiq/systemd/templates/sidekiq.service.capistrano.erb %>
-
 [Unit]
 Description=sidekiq for <%= "#{fetch(:application)} (#{fetch(:stage)})" %>
 After=syslog.target network.target
@@ -12,7 +10,7 @@ ExecReload=/bin/kill -TSTP $MAINPID
 ExecStop=/bin/kill -TERM $MAINPID
 <%="StandardOutput=append:#{fetch(:sidekiq_log)}" if fetch(:sidekiq_log) %>
 <%="StandardError=append:#{fetch(:sidekiq_error_log)}" if fetch(:sidekiq_error_log) %>
-<%="User=#{fetch(:sidekiq_user)}" if fetch(:sidekiq_user) %>
+<%="User=#{fetch(:sidekiq_user)}" if (fetch(:sidekiq_user) && (fetch(:puma_systemctl_user) == :system)) %>
 <%="EnvironmentFile=#{fetch(:sidekiq_service_unit_env_file)}" if fetch(:sidekiq_service_unit_env_file) %>
 <% fetch(:sidekiq_service_unit_env_vars, []).each do |environment_variable| %>
   <%="Environment=#{environment_variable}" %>
@@ -27,4 +25,6 @@ Restart=on-failure
 SyslogIdentifier=sidekiq_<%= fetch(:application) %>_<%= fetch(:stage) %>
 
 [Install]
-WantedBy=default.target
+WantedBy=<%=(fetch(:sidekiq_systemctl_user) == :system) ? "multi-user.target" : "default.target"%>
+
+<% # Adapted from: https://github.com/seuros/capistrano-sidekiq/blob/master/lib/generators/capistrano/sidekiq/systemd/templates/sidekiq.service.capistrano.erb %>

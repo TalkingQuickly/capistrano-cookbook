@@ -9,6 +9,7 @@ module Capistrano
     require 'capistrano/cookbook/run_tests'
     require 'capistrano/cookbook/setup_config'
     require 'capistrano/cookbook/create_database'
-    require 'capistrano/cookbook/systemd'
+    require 'capistrano/cookbook/puma_systemd'
+    require 'capistrano/cookbook/sidekiq_systemd'
   end
 end
