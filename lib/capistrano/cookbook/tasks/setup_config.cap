@@ -43,6 +43,12 @@ end
 # remove the default nginx configuration as it will tend to conflict with our configs
 before 'deploy:setup_config', 'nginx:remove_default_vhost'
 
+# make sure that shared directories etc exist before running otherwise the
+# initial nginx reload won't work because of the nginx log file directory path
+# not existing
+before 'deploy:setup_config', 'deploy:check:directories'
+before 'deploy:setup_config', 'deploy:check:linked_dirs'
+
 # After setup config has generated and setup initial files, run the Capistrano Puma
 # tasks responsible for uploading config files. Note that `setup_config` creates overrides
 # for these in `config/deploy/templates` so we're not using the default ones from the gem
@@ -53,7 +59,7 @@ after 'deploy:setup_config', 'puma:systemd:config'
 after 'deploy:setup_config', 'puma:systemd:enable'
 
 # Enable the sidekiq systemd service so that it's started automatically on (re)boot
-after 'deploy:setup_config', 'sidekiq:systemd:enable'
+after 'deploy:setup_config', 'sidekiq:systemd:enable' if (defined?(Capistrano::Sidekiq) == 'constant' && Capistrano::Sidekiq.class == Class)
 
 # reload nginx to it will pick up any modified vhosts from setup_config
 after 'deploy:setup_config', 'nginx:reload'
