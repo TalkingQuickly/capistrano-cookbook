@@ -9,11 +9,19 @@ module Capistrano
         class_option :sidekiq, type: :boolean, default: false
         class_option :production_hostname, type: :string, default: nil
         class_option :production_server_address, type: :string, default: nil
+        class_option :certbot_enable, type: :boolean, default: false
+        class_option :certbot_email, type: :string
 
         def setup
           @production_hostname = options[:production_hostname] || 'YOUR_PRODUCTION_HOSTNAME'
           @production_server_address = options[:production_server_address] || 'YOUR_PRODUCTION_SERVER_ADDRESS'
           @generate_sidekiq = options[:sidekiq]
+          @certbot_enable = options[:certbot_enable]
+          @certbot_email = options[:certbot_email]
+        end
+
+        def check_domain
+          raise 'The `_` chatacter is not valid in domain names' if @production_hostname.include?('_')
         end
 
         def create_capfile

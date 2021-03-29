@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.2 (April 2021)
+
+- Adds support for automatically adding SSL certificates via Certbot
+
 ## 5.0.1 (March 2021)
 
 - Adds full support for deploy (but not config creation) without sudo access

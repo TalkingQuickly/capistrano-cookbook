@@ -57,6 +57,7 @@ after 'deploy:setup_config', 'puma:nginx_config'
 after 'deploy:setup_config', 'puma:monit:config'
 after 'deploy:setup_config', 'puma:systemd:config'
 after 'deploy:setup_config', 'puma:systemd:enable'
+after 'deploy:setup_config', 'certbot:install'
 
 # Enable the sidekiq systemd service so that it's started automatically on (re)boot
 after 'deploy:setup_config', 'sidekiq:systemd:enable' if (defined?(Capistrano::Sidekiq) == 'constant' && Capistrano::Sidekiq.class == Class)
