@@ -7,7 +7,7 @@ namespace :database do
       unless test("[ -f #{shared_path}/config/database.yml ]")
         execute "cp #{shared_path}/config/database.example.yml #{shared_path}/config/database.yml"
       end
-      system("scp #{fetch(:deploy_user)}@#{host}:#{shared_path}/config/database.yml db.tmp.yml")
+      system("scp -P #{host.port or 22} #{fetch(:deploy_user)}@#{host}:#{shared_path}/config/database.yml db.tmp.yml")
       yaml =  YAML.load_file("db.tmp.yml")
       system("rm db.tmp.yml")
       puts yaml
